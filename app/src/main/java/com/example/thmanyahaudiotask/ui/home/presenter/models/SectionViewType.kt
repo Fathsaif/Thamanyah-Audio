@@ -11,10 +11,10 @@ enum class SectionViewType {
         fun fromRawType(type: String): SectionViewType {
             return when (type) {
                 "square" -> SQUARE
-                "big_square" -> BIG_SQUARE
+                "big square" -> BIG_SQUARE
                 "2_lines_grid" -> GRID_2_LINES
                 "queue" -> HORIZONTAL_SCROLL
-                else -> UNKNOWN
+                else -> SQUARE
             }
         }
     }

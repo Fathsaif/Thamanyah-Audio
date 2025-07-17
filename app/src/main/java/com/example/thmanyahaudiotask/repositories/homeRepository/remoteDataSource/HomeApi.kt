@@ -9,4 +9,7 @@ interface HomeApi {
     suspend fun getHomeSections(
         @Query("page") page: Int? = null
     ): HomeSectionsDTO
+
+    @GET("https://mock.apidog.com/m1/735111-711675-default/search")
+    suspend fun searchHomeSections(): HomeSectionsDTO
 }

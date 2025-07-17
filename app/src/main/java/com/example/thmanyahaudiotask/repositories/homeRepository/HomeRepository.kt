@@ -5,6 +5,9 @@ import com.example.thmanyahaudiotask.utils.Resource
 
 interface HomeRepository {
     suspend fun getHomeSections(): Resource<HomeSectionsDTO>
+
+    suspend fun searchHomeSections(query: String): Resource<HomeSectionsDTO>
+
     fun getPagination(): Int
     fun incrementPagination()
     fun resetPagination()

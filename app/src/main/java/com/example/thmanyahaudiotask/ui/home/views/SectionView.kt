@@ -24,7 +24,7 @@ import com.example.thmanyahaudiotask.ui.home.presenter.models.SectionViewType
 import com.example.thmanyahaudiotask.ui.theme.ThmanyahTheme
 
 @Composable
-fun SectionView(section: SectionUi, onItemClick: (ContentItemUi) -> Unit) {
+fun SectionView(section: SectionUi, onItemClick: (ContentItemUi) -> Unit = {}) {
     Column(modifier = Modifier.padding(vertical = ThmanyahTheme.spacing.spacing3)) {
         Text(
             text = section.name,

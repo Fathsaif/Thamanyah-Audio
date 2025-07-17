@@ -1,5 +1,6 @@
 package com.example.thmanyahaudiotask.repositories.homeRepository
 
+import android.util.Log
 import com.example.thmanyahaudiotask.repositories.homeRepository.models.HomeSectionsDTO
 import com.example.thmanyahaudiotask.repositories.homeRepository.remoteDataSource.HomeApi
 import com.example.thmanyahaudiotask.utils.NetworkHelper
@@ -19,6 +20,20 @@ class HomeRepositoryImpl(
             )
             return Resource.Success(response)
         } catch (exception: Exception) {
+            NetworkHelper.handleResponseException(
+                exception = exception,
+                networkError = Resource.Error(errorCode = ErrorStates.NETWORK_ERROR),
+                serverError = Resource.Error(errorCode = ErrorStates.SERVER_ERROR)
+            )
+        }
+    }
+
+    override suspend fun searchHomeSections(query: String): Resource<HomeSectionsDTO> {
+        return try {
+            val response = homeApi.searchHomeSections()
+            Resource.Success(response)
+        } catch (exception: Exception) {
+            Log.d("HomeRepositoryImpl", "searchHomeSections: ${exception.message}")
             NetworkHelper.handleResponseException(
                 exception = exception,
                 networkError = Resource.Error(errorCode = ErrorStates.NETWORK_ERROR),
