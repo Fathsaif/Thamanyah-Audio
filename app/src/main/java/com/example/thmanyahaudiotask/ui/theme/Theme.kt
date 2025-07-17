@@ -2,6 +2,7 @@ package com.example.thmanyahaudiotask.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -54,4 +55,18 @@ fun ThmanyahAudioTaskTheme(
         typography = Typography,
         content = content
     )
+}
+
+object ThmanyahTheme {
+    val colors: ColorScheme
+        @Composable
+        get() = MaterialTheme.colorScheme
+
+    val typography: androidx.compose.material3.Typography
+        @Composable
+        get() = MaterialTheme.typography
+
+    val spacing: Spacing
+        @Composable
+        get() = LocalSpacing.current
 }

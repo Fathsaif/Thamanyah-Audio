@@ -5,7 +5,7 @@ import com.example.thmanyahaudiotask.repositories.homeRepository.models.SectionD
 
 data class SectionUi(
     val name: String,
-    val type: String,
+    val type: SectionViewType,
     val contentType: ContentTypeUi,
     val order: Int,
     val items: List<ContentItemUi>
@@ -25,7 +25,7 @@ data class ContentItemUi(
 fun SectionDTO.toUiModel(): SectionUi {
     return SectionUi(
         name = name,
-        type = type,
+        type = SectionViewType.fromRawType(type),
         contentType = ContentTypeUi.fromString(contentType),
         order = order,
         items = content.map { it.toUiModel(contentType) }
