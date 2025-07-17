@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 data class HomeSectionsDTO(
-    val sections: List<Section>,
+    val sections: List<SectionDTO>,
 
     @SerialName("pagination")
     val pagination: Pagination? = null
@@ -12,7 +12,7 @@ data class HomeSectionsDTO(
 )
 
 @Serializable
-data class Section(
+data class SectionDTO(
     val name: String,
     val type: String,
 

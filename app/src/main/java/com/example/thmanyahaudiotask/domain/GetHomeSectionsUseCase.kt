@@ -1,7 +1,8 @@
 package com.example.thmanyahaudiotask.domain
 
 import com.example.thmanyahaudiotask.repositories.homeRepository.HomeRepository
-import com.example.thmanyahaudiotask.repositories.homeRepository.models.ContentItemDTO
+import com.example.thmanyahaudiotask.ui.home.presenter.models.SectionUi
+import com.example.thmanyahaudiotask.ui.home.presenter.models.toUiModel
 import com.example.thmanyahaudiotask.utils.Resource
 import com.example.thmanyahaudiotask.utils.enums.ErrorStates
 
@@ -11,7 +12,6 @@ class GetHomeSectionsUseCase(
     private val homeRepository: HomeRepository
 ) {
 
-    // Define the function to get home sections
     suspend operator fun invoke(): Result {
         val result = homeRepository.getHomeSections()
 
@@ -25,21 +25,19 @@ class GetHomeSectionsUseCase(
             }
 
             is Resource.Success -> {
-                result.data?.let { sections ->
-                    /*  if (stores.stores.isNotEmpty()) {
-                          val isNextPageAvailable = stores.pagination.currentPage == stores.pagination.totalPages
-                          if (isNextPageAvailable) storesRepository.incrementPagination()
-                          Result.Success(
-                              isNextPageAvailable = isNextPageAvailable,
-                              stores = stores.stores
-                          )
-                      } else {
-                          Result.EmptyDataError
-                      }*/
-                    Result.Success(
-                        isNextPageAvailable = sections.sections.isNotEmpty(),
-                        sections = sections.sections[0].content
-                    )
+                result.data?.let { data ->
+                    if (data.sections.isNotEmpty()) {
+                        //val isNextPageAvailable = data.pagination?.nextPage == data.pagination.totalPages
+                        // if (isNextPageAvailable) homeRepository.incrementPagination()
+                        Result.Success(
+                            isNextPageAvailable = data.sections.isNotEmpty(),
+                            sections = data.sections.map {
+                                it.toUiModel()
+                            }
+                        )
+                    } else {
+                        Result.EmptyDataError
+                    }
 
                 } ?: Result.EmptyDataError
             }
@@ -51,8 +49,6 @@ class GetHomeSectionsUseCase(
                     else -> Result.ServerError
                 }
             }
-
-            else -> Result.EmptyDataError
         }
     }
 
@@ -64,7 +60,7 @@ class GetHomeSectionsUseCase(
         data object EmptyDataError : Result
         data class Success(
             var isNextPageAvailable: Boolean = false,
-            val sections: List<ContentItemDTO>
+            val sections: List<SectionUi>
         ) : Result
     }
 }
