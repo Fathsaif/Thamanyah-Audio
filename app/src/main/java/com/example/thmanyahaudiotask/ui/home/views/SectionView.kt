@@ -1,20 +1,25 @@
 package com.example.thmanyahaudiotask.ui.home.views
 
+import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.thmanyahaudiotask.ui.home.presenter.models.ContentItemUi
@@ -23,8 +28,11 @@ import com.example.thmanyahaudiotask.ui.home.presenter.models.SectionUi
 import com.example.thmanyahaudiotask.ui.home.presenter.models.SectionViewType
 import com.example.thmanyahaudiotask.ui.theme.ThmanyahTheme
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun SectionView(section: SectionUi, onItemClick: (ContentItemUi) -> Unit = {}) {
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val itemWidth = screenWidth * 0.7f
     Column(modifier = Modifier.padding(vertical = ThmanyahTheme.spacing.spacing3)) {
         Text(
             text = section.name,
@@ -33,20 +41,40 @@ fun SectionView(section: SectionUi, onItemClick: (ContentItemUi) -> Unit = {}) {
             modifier = Modifier.padding(horizontal = ThmanyahTheme.spacing.spacing4)
         )
 
-        Spacer(modifier = Modifier.height(ThmanyahTheme.spacing.spacing2))
+        Spacer(modifier = Modifier.height(ThmanyahTheme.spacing.spacing4))
 
         when (section.type) {
-            SectionViewType.SQUARE,
-            SectionViewType.BIG_SQUARE -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
+            SectionViewType.SQUARE -> {
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = ThmanyahTheme.spacing.spacing4),
+                    horizontalArrangement = Arrangement.spacedBy(ThmanyahTheme.spacing.spacing4)
+                ) {
+                    items(section.items) { item ->
+                        SquareContentView(
+                            itemUi = item,
+                            modifier = Modifier
+                                .width(itemWidth)
+                                .padding(horizontal = ThmanyahTheme.spacing.spacing2)
+                        )
+                    }
+                }
+            }
+
+            SectionViewType.GRID_2_LINES -> {
+                LazyHorizontalGrid(
+                    rows = GridCells.Fixed(2),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp),
+                        .height(250.dp),
                     contentPadding = PaddingValues(horizontal = ThmanyahTheme.spacing.spacing4)
                 ) {
                     items(section.items) { item ->
-                        ContentCard(item = item) { onItemClick(item) }
+                        EpisodeRowCard(
+                            item = item, modifier = Modifier
+                                .width(itemWidth)
+                        ) { onItemClick(item) }
                     }
                 }
             }
@@ -59,14 +87,29 @@ fun SectionView(section: SectionUi, onItemClick: (ContentItemUi) -> Unit = {}) {
                 }
             }
 
-            SectionViewType.GRID_2_LINES -> {
-                Column(modifier = Modifier.padding(horizontal = ThmanyahTheme.spacing.spacing4)) {
-                    section.items.forEach { item ->
-                        EpisodeRowCard(item = item) { onItemClick(item) }
-                        Divider(color = ThmanyahTheme.colors.surface)
+            SectionViewType.BIG_SQUARE -> {
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = ThmanyahTheme.spacing.spacing2),
+                    contentPadding = PaddingValues(horizontal = ThmanyahTheme.spacing.spacing4),
+                    horizontalArrangement = Arrangement.spacedBy(ThmanyahTheme.spacing.spacing4)
+                ) {
+                    items(section.items) { item ->
+                        Box(
+                            modifier = Modifier
+                                .fillParentMaxWidth()
+                        ) {
+                            BigSquareContent(
+                                item = item,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            )
+                        }
                     }
                 }
             }
+
 
             SectionViewType.UNKNOWN -> {
                 Text(
@@ -90,8 +133,9 @@ fun SectionViewPreview() {
             avatarUrl = "https://via.placeholder.com/150",
             description = "Description for item $index",
             authorName = "Author $index",
-            duration = 3600L + index * 60,
+            duration = "30:45",
             releaseDate = "2023-10-${index + 1}",
+            episodesCount = "${index + 1} episodes",
         )
     }
 

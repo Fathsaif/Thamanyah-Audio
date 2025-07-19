@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,9 +23,9 @@ import com.example.thmanyahaudiotask.ui.home.presenter.models.ContentItemUi
 import com.example.thmanyahaudiotask.ui.theme.ThmanyahTheme
 
 @Composable
-fun EpisodeRowCard(item: ContentItemUi, onClick: () -> Unit = {}) {
+fun EpisodeRowCard(item: ContentItemUi,modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(ThmanyahTheme.spacing.spacing2)
             .clickable { onClick() }
@@ -34,7 +35,7 @@ fun EpisodeRowCard(item: ContentItemUi, onClick: () -> Unit = {}) {
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(80.dp)
+                .aspectRatio(1f)
                 .clip(RoundedCornerShape(8.dp))
         )
 
@@ -43,7 +44,7 @@ fun EpisodeRowCard(item: ContentItemUi, onClick: () -> Unit = {}) {
         Column {
             Text(
                 text = item.name,
-                style = ThmanyahTheme.typography.bodyMedium,
+                style = ThmanyahTheme.typography.titleMedium,
                 color = ThmanyahTheme.colors.onSurface,
                 maxLines = 2
             )
@@ -69,9 +70,10 @@ fun EpisodeRowCardPreview() {
             name = "Sample Episode",
             avatarUrl = "https://example.com/image.jpg",
             description = "This is a sample description for the episode.",
-            duration = 1000L,
+            duration = "1000L",
             releaseDate = "2023-10-01",
             authorName = "Author Name",
+            episodesCount = "10 episodes"
         )
     )
 

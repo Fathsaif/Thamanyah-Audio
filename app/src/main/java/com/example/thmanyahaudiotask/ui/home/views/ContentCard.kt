@@ -41,7 +41,7 @@ fun ContentCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(ThmanyahTheme.spacing.spacing3))
                 .background(ThmanyahTheme.colors.surface)
         )
 
@@ -65,9 +65,10 @@ fun ContentCardPreview() {
             name = "Sample Content",
             avatarUrl = "https://via.placeholder.com/150",
             description = "This is a sample content description.",
-            duration = 1000L,
+            duration = "1000L",
             authorName = "Author Name",
             releaseDate = "2023-10-01",
+            episodesCount = "10",
         ),
         onClick = {}
     )

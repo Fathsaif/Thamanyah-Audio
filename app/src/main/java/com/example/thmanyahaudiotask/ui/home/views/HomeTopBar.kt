@@ -29,7 +29,7 @@ fun HomeTopBar(
             IconButton(onClick = onSearchClick) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_search),
-                    contentDescription = "Search",
+                    contentDescription = "Search Icon",
                     tint = ThmanyahTheme.colors.onBackground
                 )
             }

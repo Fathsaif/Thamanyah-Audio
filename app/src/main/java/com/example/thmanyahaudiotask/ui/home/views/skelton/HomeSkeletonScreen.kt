@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.thmanyahaudiotask.ui.theme.ThmanyahTheme
@@ -99,7 +100,7 @@ fun HomeSkeletonScreen() {
                     ShimmerBox(
                         modifier = Modifier
                             .fillMaxWidth(0.6f)
-                            .height(12.dp)
+                            .height(ThmanyahTheme.spacing.spacing3)
                     )
                 }
             }
@@ -139,6 +140,8 @@ fun ShimmerBox(
         modifier = modifier
             .clip(RoundedCornerShape(cornerRadius))
             .background(brush)
+            .testTag("ShimmerItem")
+
     )
 }
 

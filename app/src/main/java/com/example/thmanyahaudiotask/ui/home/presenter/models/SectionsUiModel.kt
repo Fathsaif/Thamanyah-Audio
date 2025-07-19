@@ -1,8 +1,9 @@
 package com.example.thmanyahaudiotask.ui.home.presenter.models
 
-import android.util.Log
 import com.example.thmanyahaudiotask.repositories.homeRepository.models.ContentItemDTO
 import com.example.thmanyahaudiotask.repositories.homeRepository.models.SectionDTO
+import com.example.thmanyahaudiotask.utils.formatDuration
+import com.example.thmanyahaudiotask.utils.formatTimeAgo
 
 data class SectionUi(
     val name: String,
@@ -18,9 +19,10 @@ data class ContentItemUi(
     val description: String?,
     val avatarUrl: String?,
     val authorName: String?,
-    val duration: Long?,
+    val duration: String?,
     val releaseDate: String?,
-    val audioUrl: String? = null
+    val audioUrl: String? = null,
+    val episodesCount: String,
 )
 
 fun SectionDTO.toUiModel(): SectionUi {
@@ -47,8 +49,9 @@ fun ContentItemDTO.toUiModel(contentType: String?): ContentItemUi {
         description = description,
         avatarUrl = this.avatarUrl,
         authorName = authorName,
-        duration = duration,
-        releaseDate = releaseDate,
-        audioUrl = audioUrl
+        duration = formatDuration(duration),
+        releaseDate = formatTimeAgo(releaseDate),
+        audioUrl = audioUrl,
+        episodesCount = episodeCount?.toString() ?: "0"
     )
 }

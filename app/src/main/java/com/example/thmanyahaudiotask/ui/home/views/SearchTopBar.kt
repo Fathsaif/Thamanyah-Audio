@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import com.example.thmanyahaudiotask.R
 import com.example.thmanyahaudiotask.ui.theme.ThmanyahTheme
@@ -39,7 +40,9 @@ fun SearchBarTop(
                     querySearch = it
                     onQueryChange(it)
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("SearchTextField"),
                 placeholder = {
                     Text(
                         text = stringResource(R.string.searching),

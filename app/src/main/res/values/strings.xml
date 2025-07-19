@@ -2,4 +2,5 @@
     <string name="app_name">Thmanyah Radio</string>
     <string name="no_data_available">No data available</string>
     <string name="searching">what are you looking for!</string>
+    <string name="episode_count"> %s Episodes</string>
 </resources>
