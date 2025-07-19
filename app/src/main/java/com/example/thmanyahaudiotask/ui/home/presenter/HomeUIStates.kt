@@ -7,6 +7,5 @@ sealed class HomeUIStates {
     data class Error(val message: String) : HomeUIStates()
     object Loading : HomeUIStates()
     object Empty : HomeUIStates()
-    data class SearchMode(val query: String = "") : HomeUIStates()
 
 }

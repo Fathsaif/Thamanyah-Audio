@@ -1,7 +1,6 @@
 package com.example.thmanyahaudiotask.di
 
 import com.example.thmanyahaudiotask.domain.GetHomeSectionsUseCase
-import com.example.thmanyahaudiotask.domain.SearchUseCase
 import com.example.thmanyahaudiotask.repositories.RetrofitFactoryInterface
 import com.example.thmanyahaudiotask.repositories.homeRepository.HomeRepository
 import com.example.thmanyahaudiotask.repositories.homeRepository.HomeRepositoryImpl
@@ -13,13 +12,7 @@ import org.koin.dsl.module
 val homeModule = module {
 
     viewModel {
-        HomeViewModel(get(),get())
-    }
-
-    factory {
-        SearchUseCase(
-            homeRepository = get(),
-        )
+        HomeViewModel(get())
     }
 
     factory {
@@ -27,7 +20,7 @@ val homeModule = module {
             homeRepository = get(),
         )
     }
-    factory<HomeRepository> {
+    single<HomeRepository> {
         HomeRepositoryImpl(
             get(),
         )

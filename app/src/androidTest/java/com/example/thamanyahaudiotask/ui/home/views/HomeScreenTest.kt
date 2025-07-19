@@ -57,7 +57,7 @@ class HomeScreenTest {
     @Test
     fun homeScreen_initialLoading_showsSkeleton() {
         composeTestRule.setContent {
-            HomeScreen()
+            HomeScreen(navController)
         }
 
         composeTestRule
@@ -77,7 +77,7 @@ class HomeScreenTest {
         runCatching {
             composeTestRule.setContent {
                 // Launch your app or screen
-                HomeScreen()
+                HomeScreen(navController)
             }
 
             composeTestRule

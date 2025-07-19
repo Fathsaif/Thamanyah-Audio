@@ -1,6 +1,8 @@
 package com.example.thmanyahaudiotask.repositories.homeRepository.remoteDataSource
 
 import com.example.thmanyahaudiotask.repositories.homeRepository.models.HomeSectionsDTO
+import com.example.thmanyahaudiotask.repositories.homeRepository.models.SearchResponseDTO
+import com.example.thmanyahaudiotask.repositories.homeRepository.models.SearchSectionDTO
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -11,5 +13,5 @@ interface HomeApi {
     ): HomeSectionsDTO
 
     @GET("https://mock.apidog.com/m1/735111-711675-default/search")
-    suspend fun searchHomeSections(): HomeSectionsDTO
+    suspend fun searchHomeSections(): SearchResponseDTO
 }

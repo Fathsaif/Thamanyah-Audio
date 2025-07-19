@@ -1,4 +1,4 @@
-package com.example.thmanyahaudiotask.ui.home.views
+package com.example.thmanyahaudiotask.ui.search.view
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,51 +13,48 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.example.thmanyahaudiotask.R
-import com.example.thmanyahaudiotask.navigation.Screens
-import com.example.thmanyahaudiotask.ui.home.presenter.HomeUIStates.Empty
-import com.example.thmanyahaudiotask.ui.home.presenter.HomeUIStates.Error
-import com.example.thmanyahaudiotask.ui.home.presenter.HomeUIStates.Loading
-import com.example.thmanyahaudiotask.ui.home.presenter.HomeUIStates.Success
-import com.example.thmanyahaudiotask.ui.home.presenter.HomeViewModel
+import com.example.thmanyahaudiotask.ui.home.views.HomeContent
+import com.example.thmanyahaudiotask.ui.home.views.SearchBarTop
 import com.example.thmanyahaudiotask.ui.home.views.skelton.HomeSkeletonScreen
+import com.example.thmanyahaudiotask.ui.search.presenter.SearchUIState
+import com.example.thmanyahaudiotask.ui.search.presenter.SearchViewModel
 import com.example.thmanyahaudiotask.ui.theme.ThmanyahTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
-    val viewModel: HomeViewModel = koinViewModel()
+fun SearchScreen(navController: NavHostController) {
+    val viewModel: SearchViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsState()
+    val searchQuery = viewModel.searchQuery.collectAsState().value
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
             .padding(),
         topBar = {
-            HomeTopBar(
-                onSearchClick = {
-                    navController.navigate(
-                        Screens.SEARCH.name
-                    )
-                },
-            )
-        }
+            SearchBarTop(searchQuery, onQueryChange = {
+                viewModel.onQueryChanged(it)
+            }, onBackClick = {
+                navController.navigateUp()
+            })
 
-    ) { innerPadding ->
+        }) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
             when (val currentState = state) {
-                is Loading -> {
+                is SearchUIState.Searching -> {
                     HomeSkeletonScreen()
                 }
 
-                is Success -> {
+                is SearchUIState.Success -> {
                     val sections = currentState.data
                     HomeContent(sections)
                 }
 
-                is Error -> {
+                is SearchUIState.Error -> {
                     val errorMessage = currentState.message
                     Text(
                         text = errorMessage,
@@ -71,9 +68,21 @@ fun HomeScreen(navController: NavHostController) {
                     )
                 }
 
-                Empty -> {
+                SearchUIState.Empty -> {
                     Text(
-                        text = stringResource(R.string.no_data_available),
+                        text = stringResource(R.string.no_search_results),
+                        style = ThmanyahTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .padding(ThmanyahTheme.spacing.spacing4)
+                            .align(
+                                Alignment.Center
+                            )
+                    )
+                }
+
+                is SearchUIState.Init -> {
+                    Text(
+                        text = stringResource(R.string.searching),
                         style = ThmanyahTheme.typography.bodyLarge,
                         modifier = Modifier
                             .padding(ThmanyahTheme.spacing.spacing4)
@@ -85,5 +94,6 @@ fun HomeScreen(navController: NavHostController) {
 
             }
         }
+
     }
 }

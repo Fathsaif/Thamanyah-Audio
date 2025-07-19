@@ -8,7 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.example.thmanyahaudiotask.ui.home.views.HomeScreen
+import androidx.navigation.compose.rememberNavController
+import com.example.thmanyahaudiotask.navigation.Navigation
 import com.example.thmanyahaudiotask.ui.theme.ThmanyahAudioTaskTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,10 +20,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ThmanyahAudioTaskTheme {
+                val navController = rememberNavController()
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                 ) { innerPadding ->
-                    HomeScreen()
+                    Navigation(navController)
                 }
             }
         }
