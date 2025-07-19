@@ -6,8 +6,6 @@ import com.example.thmanyahaudiotask.ui.home.presenter.models.toUiModel
 import com.example.thmanyahaudiotask.utils.Resource
 import com.example.thmanyahaudiotask.utils.enums.ErrorStates
 
-private const val INITIAL_PAGE = 1
-
 class GetHomeSectionsUseCase(
     private val homeRepository: HomeRepository
 ) {
@@ -17,20 +15,13 @@ class GetHomeSectionsUseCase(
 
         return when (result) {
             is Resource.Loading -> {
-                if (homeRepository.getPagination() == INITIAL_PAGE) {
-                    Result.FirstPageLoading
-                } else {
-                    Result.NextPageLoading
-                }
+                Result.Loading
             }
 
             is Resource.Success -> {
                 result.data?.let { data ->
                     if (data.sections.isNotEmpty()) {
-                        //val isNextPageAvailable = data.pagination?.nextPage == data.pagination.totalPages
-                        // if (isNextPageAvailable) homeRepository.incrementPagination()
                         Result.Success(
-                            isNextPageAvailable = data.sections.isNotEmpty(),
                             sections = data.sections.map {
                                 it.toUiModel()
                             }
@@ -53,13 +44,11 @@ class GetHomeSectionsUseCase(
     }
 
     sealed interface Result {
-        data object FirstPageLoading : Result
-        data object NextPageLoading : Result
+        data object Loading : Result
         data object NetworkError : Result
         data object ServerError : Result
         data object EmptyDataError : Result
         data class Success(
-            var isNextPageAvailable: Boolean = false,
             val sections: List<SectionUi>
         ) : Result
     }

@@ -34,7 +34,6 @@ fun ContentCard(
             .padding(ThmanyahTheme.spacing.spacing2)
             .clickable { onClick() }
     ) {
-        Log.d("ContentCard", "ContentCard: ${item.name}, ${item.avatarUrl}")
         AsyncImage(
             model = item.avatarUrl,
             contentDescription = item.name,

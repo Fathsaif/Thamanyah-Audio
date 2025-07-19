@@ -41,8 +41,6 @@ fun ContentItemDTO.toUiModel(contentType: String?): ContentItemUi {
         ContentTypeUi.AUDIO_ARTICLE -> articleId ?: ""
         else -> ""
     }
-    Log.d("ContentItemDTO", "toUiModel: id=$id, contentType=${this.avatarUrl}")
-    Log.d("ContentItemDTO", "toUiModel: id=$id, contentType=${this.name}")
     return ContentItemUi(
         id = id,
         name = name,

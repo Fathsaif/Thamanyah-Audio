@@ -27,10 +27,13 @@ class HomeViewModel(
     }
 
     fun fetchData() {
-        _uiState.value = HomeUIStates.Loading
         viewModelScope.launch {
             val result = homeSectionsUseCase.invoke()
             when (result) {
+                GetHomeSectionsUseCase.Result.Loading -> {
+                    _uiState.value = HomeUIStates.Loading
+                }
+
                 is GetHomeSectionsUseCase.Result.Success -> {
                     _uiState.value = HomeUIStates.Success(result.sections)
                 }
@@ -47,11 +50,6 @@ class HomeViewModel(
                     _uiState.value = HomeUIStates.Error("Network error occurred")
                 }
 
-                GetHomeSectionsUseCase.Result.FirstPageLoading -> {
-                }
-
-                GetHomeSectionsUseCase.Result.NextPageLoading -> {
-                }
             }
         }
     }
