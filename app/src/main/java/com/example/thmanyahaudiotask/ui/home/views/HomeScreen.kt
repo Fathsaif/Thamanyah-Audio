@@ -27,6 +27,9 @@ import org.koin.androidx.compose.koinViewModel
 fun HomeScreen(navController: NavHostController) {
     val viewModel: HomeViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsState()
+
+    val isRefreshing by viewModel.refreshingState.collectAsState()
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -54,7 +57,11 @@ fun HomeScreen(navController: NavHostController) {
 
                 is Success -> {
                     val sections = currentState.data
-                    HomeContent(sections)
+                    HomeContent(
+                        sections, isRefreshing = isRefreshing,
+                        onRefresh = {
+                            viewModel.refresh()
+                        })
                 }
 
                 is Error -> {

@@ -15,6 +15,9 @@ class HomeViewModel(
     private val _uiState = MutableStateFlow<HomeUIStates>(HomeUIStates.Loading)
     val uiState: StateFlow<HomeUIStates> = _uiState.asStateFlow()
 
+    private val _refreshingState = MutableStateFlow(false)
+    val refreshingState = _refreshingState.asStateFlow()
+
     init {
         fetchData()
     }
@@ -44,6 +47,14 @@ class HomeViewModel(
                 }
 
             }
+        }
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            _refreshingState.value = true
+            fetchData()
+            _refreshingState.value = false
         }
     }
 
