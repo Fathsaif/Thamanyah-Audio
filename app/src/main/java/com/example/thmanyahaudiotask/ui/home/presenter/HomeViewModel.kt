@@ -1,61 +1,98 @@
 package com.example.thmanyahaudiotask.ui.home.presenter
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.thmanyahaudiotask.domain.GetHomeSectionsUseCase
-import com.example.thmanyahaudiotask.domain.SearchUseCase
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.example.thmanyahaudiotask.mvi_base.Intent
+import com.example.thmanyahaudiotask.mvi_base.ViewModel
+import com.example.thmanyahaudiotask.mvi_base.sideEffect
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val homeSectionsUseCase: GetHomeSectionsUseCase
-) : ViewModel() {
-    private val _uiState = MutableStateFlow<HomeUIStates>(HomeUIStates.Loading)
-    val uiState: StateFlow<HomeUIStates> = _uiState.asStateFlow()
-
-    private val _refreshingState = MutableStateFlow(false)
-    val refreshingState = _refreshingState.asStateFlow()
+) : ViewModel<HomeState, HomeEvent>(startingState = HomeState()) {
 
     init {
-        fetchData()
+        // kick off initial load
+        process(HomeEvent.LoadInitial)
     }
 
-    fun fetchData() {
-        viewModelScope.launch {
-            val result = homeSectionsUseCase.invoke()
-            when (result) {
-                GetHomeSectionsUseCase.Result.Loading -> {
-                    _uiState.value = HomeUIStates.Loading
+    override fun HomeEvent.toIntent(): Intent<HomeState> = when (this) {
+        HomeEvent.LoadInitial -> sideEffect {
+            publish(HomeIntent.SetLoading(true))
+            viewModelScope.launch {
+                when (val result = homeSectionsUseCase()) {
+                    is GetHomeSectionsUseCase.Result.Success -> {
+                        publish(HomeIntent.SetData(result.sections))
+                    }
+                    is GetHomeSectionsUseCase.Result.EmptyDataError -> {
+                        publish(HomeIntent.SetData(emptyList()))
+                    }
+                    GetHomeSectionsUseCase.Result.NetworkError -> {
+                        publish(HomeIntent.SetError("Network error occurred"))
+                    }
+                    GetHomeSectionsUseCase.Result.ServerError -> {
+                        publish(HomeIntent.SetError("Server error occurred"))
+                    }
+                    GetHomeSectionsUseCase.Result.Loading -> {
+                        // no-op: we drive loading explicitly
+                    }
                 }
+            }
+        }
 
-                is GetHomeSectionsUseCase.Result.Success -> {
-                    _uiState.value = HomeUIStates.Success(result.sections)
+        HomeEvent.Refresh -> sideEffect {
+            publish(HomeIntent.SetRefreshing(true))
+            viewModelScope.launch {
+                // optional: reset pagination before reloading (see note below)
+                homeSectionsUseCase.resetPagination()
+                when (val result = homeSectionsUseCase()) {
+                    is GetHomeSectionsUseCase.Result.Success -> {
+                        publish(HomeIntent.SetData(result.sections))
+                    }
+                    is GetHomeSectionsUseCase.Result.EmptyDataError -> {
+                        publish(HomeIntent.SetData(emptyList()))
+                    }
+                    GetHomeSectionsUseCase.Result.NetworkError -> {
+                        publish(HomeIntent.SetError("Network error occurred"))
+                    }
+                    GetHomeSectionsUseCase.Result.ServerError -> {
+                        publish(HomeIntent.SetError("Server error occurred"))
+                    }
+                    GetHomeSectionsUseCase.Result.Loading -> Unit
                 }
+            }
+        }
 
-                is GetHomeSectionsUseCase.Result.EmptyDataError -> {
-                    _uiState.value = HomeUIStates.Empty
+        HomeEvent.LoadNextPage -> sideEffect {
+            // guard: avoid duplicate paging requests
+            if (isLoadingMore || isLoading) return@sideEffect
+            publish(HomeIntent.SetLoadingMore(true))
+            viewModelScope.launch {
+                when (val result = homeSectionsUseCase()) {
+                    is GetHomeSectionsUseCase.Result.Success -> {
+                        publish(HomeIntent.AppendData(result.sections))
+                    }
+                    is GetHomeSectionsUseCase.Result.EmptyDataError -> {
+                        // no more items
+                        publish(HomeIntent.SetLoadingMore(false))
+                    }
+                    GetHomeSectionsUseCase.Result.NetworkError -> {
+                        // keep existing data; surface a non-blocking error if you want
+                        publish(HomeIntent.SetLoadingMore(false))
+                    }
+                    GetHomeSectionsUseCase.Result.ServerError -> {
+                        publish(HomeIntent.SetLoadingMore(false))
+                    }
+                    GetHomeSectionsUseCase.Result.Loading -> Unit
                 }
+            }
+        }
 
-                GetHomeSectionsUseCase.Result.ServerError -> {
-                    _uiState.value = HomeUIStates.Error("Server error occurred")
-                }
-
-                GetHomeSectionsUseCase.Result.NetworkError -> {
-                    _uiState.value = HomeUIStates.Error("Network error occurred")
-                }
-
+        is HomeEvent.Retry -> sideEffect {
+            when (from) {
+                HomeEvent.RetrySource.INITIAL -> process(HomeEvent.LoadInitial)
+                HomeEvent.RetrySource.PAGING -> process(HomeEvent.LoadNextPage)
             }
         }
     }
-
-    fun refresh() {
-        viewModelScope.launch {
-            _refreshingState.value = true
-            fetchData()
-            _refreshingState.value = false
-        }
-    }
-
 }

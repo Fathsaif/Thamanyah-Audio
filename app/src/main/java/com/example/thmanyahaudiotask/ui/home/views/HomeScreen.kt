@@ -14,10 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.example.thmanyahaudiotask.R
 import com.example.thmanyahaudiotask.navigation.Screens
-import com.example.thmanyahaudiotask.ui.home.presenter.HomeUIStates.Empty
-import com.example.thmanyahaudiotask.ui.home.presenter.HomeUIStates.Error
-import com.example.thmanyahaudiotask.ui.home.presenter.HomeUIStates.Loading
-import com.example.thmanyahaudiotask.ui.home.presenter.HomeUIStates.Success
+import com.example.thmanyahaudiotask.ui.home.presenter.HomeEvent
 import com.example.thmanyahaudiotask.ui.home.presenter.HomeViewModel
 import com.example.thmanyahaudiotask.ui.home.views.skelton.HomeSkeletonScreen
 import com.example.thmanyahaudiotask.ui.theme.ThmanyahTheme
@@ -25,10 +22,8 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
-    val viewModel: HomeViewModel = koinViewModel()
-    val state by viewModel.uiState.collectAsState()
-
-    val isRefreshing by viewModel.refreshingState.collectAsState()
+    val vm: HomeViewModel = koinViewModel()
+    val state by vm.state.collectAsState()
 
     Scaffold(
         modifier = Modifier
@@ -36,60 +31,50 @@ fun HomeScreen(navController: NavHostController) {
             .padding(),
         topBar = {
             HomeTopBar(
-                onSearchClick = {
-                    navController.navigate(
-                        Screens.SEARCH.name
-                    )
-                },
+                onSearchClick = { navController.navigate(Screens.SEARCH.name) },
             )
         }
-
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when (val currentState = state) {
-                is Loading -> {
+            when {
+                state.isLoading -> {
                     HomeSkeletonScreen()
                 }
 
-                is Success -> {
-                    val sections = currentState.data
-                    HomeContent(
-                        sections, isRefreshing = isRefreshing,
-                        onRefresh = {
-                            viewModel.refresh()
-                        })
-                }
-
-                is Error -> {
-                    val errorMessage = currentState.message
+                state.error != null -> {
                     Text(
-                        text = errorMessage,
+                        text = state.error ?: "",
                         style = ThmanyahTheme.typography.bodyLarge,
                         color = ThmanyahTheme.colors.error,
                         modifier = Modifier
                             .padding(ThmanyahTheme.spacing.spacing4)
-                            .align(
-                                Alignment.Center
-                            )
+                            .align(Alignment.Center)
                     )
                 }
 
-                Empty -> {
+                state.isEmpty -> {
                     Text(
                         text = stringResource(R.string.no_data_available),
                         style = ThmanyahTheme.typography.bodyLarge,
                         modifier = Modifier
                             .padding(ThmanyahTheme.spacing.spacing4)
-                            .align(
-                                Alignment.Center
-                            )
+                            .align(Alignment.Center)
                     )
                 }
 
+                else -> {
+                    HomeContent(
+                        sections = state.sections,
+                        isRefreshing = state.isRefreshing,
+                        isLoadingMore = state.isLoadingMore,
+                        onRefresh = { vm.process(HomeEvent.Refresh) },
+                        onLoadMore = { vm.process(HomeEvent.LoadNextPage) }
+                    )
+                }
             }
         }
     }
