@@ -31,7 +31,7 @@ class HomeRepositoryImpl(
 
     override suspend fun searchHomeSections(query: String): Resource<SearchResponseDTO> {
         return try {
-            val response = homeApi.searchHomeSections()
+            val response = homeApi.searchHomeSections(query)
             Resource.Success(response)
         } catch (exception: Exception) {
             Log.d("HomeRepositoryImpl", "searchHomeSections: ${exception.message}")
