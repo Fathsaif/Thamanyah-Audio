@@ -43,6 +43,8 @@ class GetHomeSectionsUseCase(
         }
     }
 
+    fun resetPagination() = homeRepository.resetPagination()
+
     sealed interface Result {
         data object Loading : Result
         data object NetworkError : Result
