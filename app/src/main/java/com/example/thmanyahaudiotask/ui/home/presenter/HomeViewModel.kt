@@ -12,7 +12,6 @@ class HomeViewModel(
 ) : ViewModel<HomeState, HomeEvent>(startingState = HomeState()) {
 
     init {
-        // kick off initial load
         process(HomeEvent.LoadInitial)
     }
 
@@ -34,7 +33,6 @@ class HomeViewModel(
                         publish(HomeIntent.SetError("Server error occurred"))
                     }
                     GetHomeSectionsUseCase.Result.Loading -> {
-                        // no-op: we drive loading explicitly
                     }
                 }
             }
@@ -43,7 +41,6 @@ class HomeViewModel(
         HomeEvent.Refresh -> sideEffect {
             publish(HomeIntent.SetRefreshing(true))
             viewModelScope.launch {
-                // optional: reset pagination before reloading (see note below)
                 homeSectionsUseCase.resetPagination()
                 when (val result = homeSectionsUseCase()) {
                     is GetHomeSectionsUseCase.Result.Success -> {
@@ -64,7 +61,6 @@ class HomeViewModel(
         }
 
         HomeEvent.LoadNextPage -> sideEffect {
-            // guard: avoid duplicate paging requests
             if (isLoadingMore || isLoading) return@sideEffect
             publish(HomeIntent.SetLoadingMore(true))
             viewModelScope.launch {
@@ -73,11 +69,9 @@ class HomeViewModel(
                         publish(HomeIntent.AppendData(result.sections))
                     }
                     is GetHomeSectionsUseCase.Result.EmptyDataError -> {
-                        // no more items
                         publish(HomeIntent.SetLoadingMore(false))
                     }
                     GetHomeSectionsUseCase.Result.NetworkError -> {
-                        // keep existing data; surface a non-blocking error if you want
                         publish(HomeIntent.SetLoadingMore(false))
                     }
                     GetHomeSectionsUseCase.Result.ServerError -> {
