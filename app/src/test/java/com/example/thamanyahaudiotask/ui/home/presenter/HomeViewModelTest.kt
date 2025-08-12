@@ -6,6 +6,7 @@ import com.example.thamanyahaudiotask.domain.homeFakeUiModel
 import com.example.thmanyahaudiotask.domain.GetHomeSectionsUseCase
 import com.example.thmanyahaudiotask.repositories.homeRepository.HomeRepository
 import com.example.thmanyahaudiotask.utils.Resource
+import com.example.thamanyahaudiotask.utils.MainDispatcherRule
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -13,6 +14,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.junit.Rule
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
@@ -28,6 +30,9 @@ class HomeViewModelTest {
 
     private var closeable: AutoCloseable? = null
 
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     @Before
     fun setUp() {
         closeable = MockitoAnnotations.openMocks(this)
@@ -40,7 +45,7 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `load initial data success updates state`() = runTest {
+    fun `load initial data success updates state`() = runTest(mainDispatcherRule.testDispatcher) {
         `when`(homeRepository.getHomeSections()).thenReturn(
             Resource.Success(
                 data = homeFakeSectionsDTO
@@ -61,7 +66,7 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `refresh emits refreshing then data`() = runTest {
+    fun `refresh emits refreshing then data`() = runTest(mainDispatcherRule.testDispatcher) {
         `when`(homeRepository.getHomeSections()).thenReturn(
             Resource.Success(homeFakeSectionsDTO),
             Resource.Success(homeFakeSectionsDTO)
@@ -89,7 +94,7 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `load next page appends data`() = runTest {
+    fun `load next page appends data`() = runTest(mainDispatcherRule.testDispatcher) {
         `when`(homeRepository.getHomeSections()).thenReturn(
             Resource.Success(homeFakeSectionsDTO),
             Resource.Success(homeFakeSectionsDTO)
