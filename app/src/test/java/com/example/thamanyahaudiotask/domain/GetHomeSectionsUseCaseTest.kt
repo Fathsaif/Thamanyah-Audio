@@ -133,8 +133,9 @@ val homeFakeUiModel = SectionUi(
             description = "Test description",
             avatarUrl = "https://example.com/image.jpg",
             authorName = "Author One",
-            duration = 3600L ,
+            duration = "3600L" ,
             releaseDate = "2023-10-01",
+            episodesCount = "9"
         )
     )
 )
