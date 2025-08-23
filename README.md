@@ -23,7 +23,7 @@ A sample audio content app built using modern Android development tools and arch
 - 🦴 Shimmer skeleton loading
 - 🧭 Compose Navigation between screens
 - 📦 Modular and testable codebase
-- 🧪 Unit tests for repository and ViewModel
+- 🧪 Unit tests for repository, use cases and ViewModel
 - 🌀 Pull to refresh (Compose version)
 
 ## 📁 Project Structure
